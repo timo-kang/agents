@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implementation Lead"
+  short_description: "Production-grade implementation execution"
+  default_prompt: "Use $implementation-lead to build this cleanly and verify the result."

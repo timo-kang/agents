@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ruthless Quality Critic"
+  short_description: "Harsh critique with a serious quality bar"
+  default_prompt: "Use $ruthless-quality-critic to tear this apart and expose the weak points."

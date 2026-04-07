@@ -1,0 +1,4 @@
+interface:
+  display_name: "Voca Orchestrator"
+  short_description: "Project-aware routing for the Voca codebase"
+  default_prompt: "Use $voca-orchestrator to route this Voca task to the right specialist with the right constraints."

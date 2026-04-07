@@ -1,0 +1,4 @@
+interface:
+  display_name: "Product Planner"
+  short_description: "Scope, sequence, and planning rigor"
+  default_prompt: "Use $product-planner to turn this goal into a precise execution plan."

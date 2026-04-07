@@ -1,0 +1,4 @@
+interface:
+  display_name: "Systems Architect"
+  short_description: "System design with explicit tradeoffs"
+  default_prompt: "Use $systems-architect to design the architecture and expose tradeoffs."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Security Reviewer"
+  short_description: "Security review and threat assessment"
+  default_prompt: "Use $security-reviewer to assess the security risks and hardening gaps."

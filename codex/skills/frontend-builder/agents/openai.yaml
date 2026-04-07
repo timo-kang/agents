@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Builder"
+  short_description: "Template, CSS, and JS implementation"
+  default_prompt: "Use $frontend-builder to implement the Voca UI cleanly across templates, CSS, and JS."

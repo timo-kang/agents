@@ -1,0 +1,4 @@
+interface:
+  display_name: "Observability Reviewer"
+  short_description: "Logging, diagnostics, and operability review"
+  default_prompt: "Use $observability-reviewer to evaluate logging, debugging, and operational visibility."
