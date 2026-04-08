@@ -1,0 +1,14 @@
+api-designer
+data-modeler
+frontend-builder
+implementation-lead
+observability-reviewer
+product-planner
+quality-gatekeeper
+release-orchestrator
+research-analyst
+ruthless-quality-critic
+security-reviewer
+systems-architect
+test-strategist
+ui-systems-designer

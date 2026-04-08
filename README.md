@@ -4,12 +4,20 @@ Portable agent repository for:
 
 - Claude agents in `claude/agents/`
 - Codex skills in `codex/skills/`
+- managed install profiles in `manifests/`
+- local ignored overlays in `private/`
 
 This repo is meant to be the source of truth for the agent team so it can be used on other machines without rebuilding prompts and skill files manually.
 
+## Packs
+
+- Core pack: reusable general-purpose roles tracked in git
+- Private overlay: local/project-specific agents and skills kept under `private/` and ignored by git
+
+By default, install and sync operate on the tracked core pack only. If a local private overlay exists, you can include it explicitly.
+
 ## Included Team
 
-- `voca-orchestrator`
 - `research-analyst`
 - `product-planner`
 - `systems-architect`
@@ -55,8 +63,13 @@ Clone the repo, then run:
 
 By default this installs:
 
-- Claude agents to `~/.claude/agents`
-- Codex skills to `~/.codex/skills`
+- the repo-managed core Claude agents to `~/.claude/agents`
+- the repo-managed core Codex skills to `~/.codex/skills`
+
+The installer is convergent for repo-managed items:
+
+- managed agents/skills that were removed from the repo are removed from the target
+- unrelated local agents/skills that are not managed by this repo are left alone
 
 ### Install only one side
 
@@ -71,6 +84,12 @@ By default this installs:
 ./scripts/install.sh --home /custom/home
 ```
 
+### Include your local private overlay
+
+```bash
+./scripts/install.sh --with-private
+```
+
 ## Sync This Repo From Your Current Machine
 
 If you edit the live agents under `~/.claude/agents` or `~/.codex/skills`, pull those changes back into this repo with:
@@ -79,10 +98,37 @@ If you edit the live agents under `~/.claude/agents` or `~/.codex/skills`, pull 
 ./scripts/sync-from-home.sh
 ```
 
-This updates the repo copy from the current machine's home directories.
+This syncs only the repo-managed core pack from the current machine's home directories.
+
+### Sync your local private overlay too
+
+```bash
+./scripts/sync-from-home.sh --with-private
+```
+
+### Fail on missing managed files
+
+```bash
+./scripts/sync-from-home.sh --strict
+```
+
+## Validate The Repo
+
+Before committing or after syncing, run:
+
+```bash
+./scripts/validate.sh
+```
+
+This checks that:
+
+- every manifest entry exists
+- every Codex skill has `SKILL.md` and `agents/openai.yaml`
+- no repo-managed skill still contains `[TODO:]` placeholders
+- Codex quick validation passes when the local validator is available
 
 ## Notes
 
-- `voca-orchestrator` and its references are project-aware and specific to the Voca codebase.
-- The other roles are generally reusable across projects.
+- Put project-specific or proprietary roles under `private/claude/agents/` and `private/codex/skills/`. That path is ignored by git.
+- The tracked core roles are intended to stay reusable across projects.
 - After installing on another machine, restart or reload Claude/Codex so the new agents and skills are discovered.
