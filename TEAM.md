@@ -15,11 +15,12 @@ All roles use kebab-case `<domain>-<responsibility>`.
 
 ## Distribution Model
 
-- Core pack: reusable roles installed by default
+- Core pack: reusable roles installed by default and tracked in git
 - Private overlay: project-specific or proprietary roles kept under `private/` and installed only with `--with-private`
 - Manifests define the exact repo-managed set for install and sync
 
 Install and sync are scoped to manifest-managed items so unrelated local experiments are not copied into the repo or deleted from a target machine.
+The private overlay is intentionally outside the tracked public pack.
 
 ## Handoff Format
 
@@ -31,4 +32,4 @@ Install and sync are scoped to manifest-managed items so unrelated local experim
 - Expected output: [decision or deliverable]
 ```
 
-Project-specific orchestration layers should live under `private/`, not the tracked public pack.
+Project-specific orchestration layers should live under `private/`, not the tracked public pack. Validate them explicitly with `./scripts/validate.sh --with-private` if you rely on them locally.

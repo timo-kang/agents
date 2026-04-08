@@ -7,14 +7,14 @@ Portable agent repository for:
 - managed install profiles in `manifests/`
 - local ignored overlays in `private/`
 
-This repo is meant to be the source of truth for the agent team so it can be used on other machines without rebuilding prompts and skill files manually.
+This repo is the source of truth for the tracked public core pack so it can be used on other machines without rebuilding prompts and skill files manually.
 
 ## Packs
 
 - Core pack: reusable general-purpose roles tracked in git
 - Private overlay: local/project-specific agents and skills kept under `private/` and ignored by git
 
-By default, install and sync operate on the tracked core pack only. If a local private overlay exists, you can include it explicitly.
+By default, install and sync operate on the tracked core pack only. If a local private overlay exists, you can include it explicitly on machines that have that private directory.
 
 ## Included Team
 
@@ -39,6 +39,8 @@ By default, install and sync operate on the tracked core pack only. If a local p
 agents/
 ├── README.md
 ├── TEAM.md
+├── manifests/
+│   └── *.txt
 ├── claude/
 │   └── agents/
 │       └── *.md
@@ -48,9 +50,13 @@ agents/
 │           ├── SKILL.md
 │           ├── agents/openai.yaml
 │           └── references/...
+├── private/              # local only, git-ignored
+│   ├── claude/agents/
+│   └── codex/skills/
 └── scripts/
     ├── install.sh
     └── sync-from-home.sh
+    └── validate.sh
 ```
 
 ## Install On Another Machine
@@ -98,7 +104,7 @@ If you edit the live agents under `~/.claude/agents` or `~/.codex/skills`, pull 
 ./scripts/sync-from-home.sh
 ```
 
-This syncs only the repo-managed core pack from the current machine's home directories.
+This syncs only the tracked core pack from the current machine's home directories.
 
 ### Sync your local private overlay too
 
@@ -127,8 +133,16 @@ This checks that:
 - no repo-managed skill still contains `[TODO:]` placeholders
 - Codex quick validation passes when the local validator is available
 
+### Validate your local private overlay too
+
+```bash
+./scripts/validate.sh --with-private
+```
+
+This checks the ignored `private/` tree if it exists locally.
+
 ## Notes
 
-- Put project-specific or proprietary roles under `private/claude/agents/` and `private/codex/skills/`. That path is ignored by git.
+- Put project-specific or proprietary roles under `private/claude/agents/` and `private/codex/skills/`. That path is ignored by git and is intentionally outside the public core pack.
 - The tracked core roles are intended to stay reusable across projects.
 - After installing on another machine, restart or reload Claude/Codex so the new agents and skills are discovered.

@@ -6,6 +6,18 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 MANIFEST_DIR="$REPO_ROOT/manifests"
 VALIDATOR="$HOME/.codex/skills/.system/skill-creator/scripts/quick_validate.py"
 FAILURES=0
+WITH_PRIVATE=0
+PRIVATE_DIR="${AGENTS_PRIVATE_DIR:-$REPO_ROOT/private}"
+
+usage() {
+  cat <<'EOF' >&2
+Usage: ./scripts/validate.sh [--with-private]
+
+Validates the tracked core pack by default.
+Use --with-private to also validate the local ignored private overlay if it exists.
+EOF
+  exit 1
+}
 
 manifest_entries() {
   local manifest_path="$1"
@@ -43,6 +55,34 @@ check_skill() {
   fi
 }
 
+check_optional_private_file() {
+  local path="$1"
+  if [[ -e "$path" && ! -f "$path" ]]; then
+    echo "Expected file but found something else: $path" >&2
+    FAILURES=1
+  fi
+}
+
+check_optional_private_skill() {
+  local skill_dir="$1"
+  if [[ ! -e "$skill_dir" ]]; then
+    return
+  fi
+  check_skill "$skill_dir"
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --with-private)
+      WITH_PRIVATE=1
+      shift
+      ;;
+    *)
+      usage
+      ;;
+  esac
+done
+
 while IFS= read -r entry; do
   [[ -z "$entry" ]] && continue
   check_file "$REPO_ROOT/claude/agents/$entry"
@@ -56,6 +96,22 @@ while IFS= read -r entry; do
 done < <(
   manifest_entries "$MANIFEST_DIR/codex-core.txt"
 )
+
+if [[ "$WITH_PRIVATE" -eq 1 ]]; then
+  if [[ -d "$PRIVATE_DIR/claude/agents" ]]; then
+    while IFS= read -r private_file; do
+      [[ -z "$private_file" ]] && continue
+      check_optional_private_file "$private_file"
+    done < <(find "$PRIVATE_DIR/claude/agents" -maxdepth 1 -type f -name '*.md' | sort)
+  fi
+
+  if [[ -d "$PRIVATE_DIR/codex/skills" ]]; then
+    while IFS= read -r private_skill; do
+      [[ -z "$private_skill" ]] && continue
+      check_optional_private_skill "$private_skill"
+    done < <(find "$PRIVATE_DIR/codex/skills" -mindepth 1 -maxdepth 1 -type d | sort)
+  fi
+fi
 
 if [[ "$FAILURES" -ne 0 ]]; then
   echo "Validation failed." >&2
