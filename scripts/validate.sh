@@ -4,7 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 MANIFEST_DIR="$REPO_ROOT/manifests"
-VALIDATOR="$HOME/.codex/skills/.system/skill-creator/scripts/quick_validate.py"
+VALIDATOR="$SCRIPT_DIR/validate_skill.py"
 FAILURES=0
 WITH_PRIVATE=0
 PRIVATE_DIR="${AGENTS_PRIVATE_DIR:-$REPO_ROOT/private}"
@@ -47,11 +47,9 @@ check_skill() {
     echo "Found TODO placeholder in $skill_dir" >&2
     FAILURES=1
   fi
-  if [[ -f "$VALIDATOR" ]]; then
-    if ! python3 "$VALIDATOR" "$skill_dir" >/dev/null; then
-      echo "Validator failed for $skill_dir" >&2
-      FAILURES=1
-    fi
+  if ! python3 "$VALIDATOR" "$skill_dir" >/dev/null; then
+    echo "Validator failed for $skill_dir" >&2
+    FAILURES=1
   fi
 }
 

@@ -6,6 +6,7 @@ Portable agent repository for:
 - Codex skills in `codex/skills/`
 - managed install profiles in `manifests/`
 - local ignored overlays in `private/`
+- CI in `.github/workflows/`
 
 This repo is the source of truth for the tracked public core pack so it can be used on other machines without rebuilding prompts and skill files manually.
 
@@ -41,6 +42,8 @@ agents/
 ├── TEAM.md
 ├── manifests/
 │   └── *.txt
+├── .github/workflows/
+│   └── validate.yml
 ├── claude/
 │   └── agents/
 │       └── *.md
@@ -131,7 +134,7 @@ This checks that:
 - every manifest entry exists
 - every Codex skill has `SKILL.md` and `agents/openai.yaml`
 - no repo-managed skill still contains `[TODO:]` placeholders
-- Codex quick validation passes when the local validator is available
+- repo-local skill validation passes
 
 ### Validate your local private overlay too
 
@@ -141,8 +144,17 @@ This checks that:
 
 This checks the ignored `private/` tree if it exists locally.
 
+## CI
+
+GitHub Actions runs the public-core validation on push and pull request via:
+
+- `.github/workflows/validate.yml`
+
+It validates the tracked public pack only, not your ignored local private overlay.
+
 ## Notes
 
 - Put project-specific or proprietary roles under `private/claude/agents/` and `private/codex/skills/`. That path is ignored by git and is intentionally outside the public core pack.
+- See [PRIVATE_OVERLAY.md](PRIVATE_OVERLAY.md) for the local private-overlay convention.
 - The tracked core roles are intended to stay reusable across projects.
 - After installing on another machine, restart or reload Claude/Codex so the new agents and skills are discovered.
