@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Modeler"
+  short_description: "SQLite schema and data-flow design"
+  default_prompt: "Use $data-modeler to design the schema, constraints, and migration-safe data changes."

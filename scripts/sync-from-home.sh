@@ -85,10 +85,11 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-mkdir -p "$REPO_ROOT/claude/agents" "$REPO_ROOT/codex/skills"
+mkdir -p "$REPO_ROOT/claude/agents" "$REPO_ROOT/codex/skills" "$REPO_ROOT/gemini/agents"
 
 sync_file_manifest "$SOURCE_HOME/.claude/agents" "$REPO_ROOT/claude/agents" "claude"
 sync_dir_manifest "$SOURCE_HOME/.codex/skills" "$REPO_ROOT/codex/skills" "codex"
+sync_file_manifest "$SOURCE_HOME/.gemini/agents" "$REPO_ROOT/gemini/agents" "gemini"
 
 if [[ "$WITH_PRIVATE" -eq 1 ]]; then
   if [[ -d "$PRIVATE_DIR/claude/agents" ]]; then
@@ -112,6 +113,18 @@ if [[ "$WITH_PRIVATE" -eq 1 ]]; then
         cp -R "$SOURCE_HOME/.codex/skills/$skill_name" "$PRIVATE_DIR/codex/skills/"
       elif [[ "$STRICT" -eq 1 ]]; then
         echo "Missing private Codex skill in source: $SOURCE_HOME/.codex/skills/$skill_name" >&2
+        exit 1
+      fi
+    done
+  fi
+  if [[ -d "$PRIVATE_DIR/gemini/agents" ]]; then
+    for agent_file in "$PRIVATE_DIR"/gemini/agents/*.md; do
+      [[ -f "$agent_file" ]] || continue
+      agent_name="$(basename "$agent_file")"
+      if [[ -f "$SOURCE_HOME/.gemini/agents/$agent_name" ]]; then
+        cp "$SOURCE_HOME/.gemini/agents/$agent_name" "$agent_file"
+      elif [[ "$STRICT" -eq 1 ]]; then
+        echo "Missing private Gemini agent in source: $SOURCE_HOME/.gemini/agents/$agent_name" >&2
         exit 1
       fi
     done

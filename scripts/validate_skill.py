@@ -22,14 +22,43 @@ def load_yaml(path: Path):
         raise ValueError(f"Invalid YAML in {path}: {exc}") from exc
 
 
+def validate_interface(data: any, path: Path, skill_name: str) -> int:
+    if not isinstance(data, dict):
+        return fail(f"{path.name} must be a mapping in {path}")
+
+    interface = data.get("interface")
+    if not isinstance(interface, dict):
+        return fail(f"Missing interface mapping in {path}")
+
+    display_name = interface.get("display_name")
+    short_description = interface.get("short_description")
+    default_prompt = interface.get("default_prompt")
+
+    if not isinstance(display_name, str) or not display_name.strip():
+        return fail(f"Missing interface.display_name in {path}")
+    if not isinstance(short_description, str) or not (25 <= len(short_description) <= 64):
+        return fail(
+            f"interface.short_description must be 25-64 chars in {path}"
+        )
+    if default_prompt is not None:
+        if not isinstance(default_prompt, str) or f"${skill_name}" not in default_prompt:
+            return fail(
+                f"interface.default_prompt must be a string mentioning ${skill_name} in {path}"
+            )
+    return 0
+
+
 def validate_skill(skill_dir: Path) -> int:
     skill_md = skill_dir / "SKILL.md"
     openai_yaml = skill_dir / "agents" / "openai.yaml"
+    gemini_yaml = skill_dir / "agents" / "gemini.yaml"
 
     if not skill_md.is_file():
       return fail(f"Missing SKILL.md: {skill_md}")
     if not openai_yaml.is_file():
       return fail(f"Missing agents/openai.yaml: {openai_yaml}")
+    if not gemini_yaml.is_file():
+      return fail(f"Missing agents/gemini.yaml: {gemini_yaml}")
 
     content = skill_md.read_text()
     match = re.match(r"^---\n(.*?)\n---\n", content, re.DOTALL)
@@ -55,33 +84,14 @@ def validate_skill(skill_dir: Path) -> int:
     if not isinstance(description, str) or not description.strip():
         return fail(f"Frontmatter description missing or invalid in {skill_md}")
 
-    try:
-        openai = load_yaml(openai_yaml)
-    except ValueError as exc:
-        return fail(str(exc))
-
-    if not isinstance(openai, dict):
-        return fail(f"openai.yaml must be a mapping in {openai_yaml}")
-
-    interface = openai.get("interface")
-    if not isinstance(interface, dict):
-        return fail(f"Missing interface mapping in {openai_yaml}")
-
-    display_name = interface.get("display_name")
-    short_description = interface.get("short_description")
-    default_prompt = interface.get("default_prompt")
-
-    if not isinstance(display_name, str) or not display_name.strip():
-        return fail(f"Missing interface.display_name in {openai_yaml}")
-    if not isinstance(short_description, str) or not (25 <= len(short_description) <= 64):
-        return fail(
-            f"interface.short_description must be 25-64 chars in {openai_yaml}"
-        )
-    if default_prompt is not None:
-        if not isinstance(default_prompt, str) or f"${skill_name}" not in default_prompt:
-            return fail(
-                f"interface.default_prompt must be a string mentioning ${skill_name} in {openai_yaml}"
-            )
+    for yaml_path in [openai_yaml, gemini_yaml]:
+        try:
+            data = load_yaml(yaml_path)
+            res = validate_interface(data, yaml_path, skill_name)
+            if res != 0:
+                return res
+        except ValueError as exc:
+            return fail(str(exc))
 
     if "[TODO:" in content:
         return fail(f"Found TODO placeholder in {skill_md}")

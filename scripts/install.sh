@@ -7,14 +7,15 @@ MANIFEST_DIR="$REPO_ROOT/manifests"
 TARGET_HOME="$HOME"
 INSTALL_CLAUDE=1
 INSTALL_CODEX=1
+INSTALL_GEMINI=1
 WITH_PRIVATE=0
 PRIVATE_DIR="${AGENTS_PRIVATE_DIR:-$REPO_ROOT/private}"
 
 usage() {
   cat <<'EOF' >&2
-Usage: ./scripts/install.sh [--home PATH] [--claude-only | --codex-only] [--with-private]
+Usage: ./scripts/install.sh [--home PATH] [--claude-only | --codex-only | --gemini-only] [--with-private]
 
-Installs the tracked core pack into ~/.claude/agents and ~/.codex/skills.
+Installs the tracked core pack into ~/.claude/agents, ~/.codex/skills, and ~/.gemini/agents.
 Use --with-private to also install the local ignored private overlay if it exists.
 EOF
   exit 1
@@ -89,11 +90,19 @@ while [[ $# -gt 0 ]]; do
     --claude-only)
       INSTALL_CLAUDE=1
       INSTALL_CODEX=0
+      INSTALL_GEMINI=0
       shift
       ;;
     --codex-only)
       INSTALL_CLAUDE=0
       INSTALL_CODEX=1
+      INSTALL_GEMINI=0
+      shift
+      ;;
+    --gemini-only)
+      INSTALL_CLAUDE=0
+      INSTALL_CODEX=0
+      INSTALL_GEMINI=1
       shift
       ;;
     --with-private)
@@ -120,6 +129,13 @@ if [[ "$INSTALL_CODEX" -eq 1 ]]; then
   echo "Installed tracked Codex core pack to $TARGET_HOME/.codex/skills"
 fi
 
+if [[ "$INSTALL_GEMINI" -eq 1 ]]; then
+  mkdir -p "$TARGET_HOME/.gemini/agents"
+  remove_managed_files "$TARGET_HOME/.gemini/agents" "gemini"
+  copy_selected_files "$REPO_ROOT/gemini/agents" "$TARGET_HOME/.gemini/agents" "gemini"
+  echo "Installed tracked Gemini core pack to $TARGET_HOME/.gemini/agents"
+fi
+
 if [[ "$WITH_PRIVATE" -eq 1 ]]; then
   if [[ "$INSTALL_CLAUDE" -eq 1 && -d "$PRIVATE_DIR/claude/agents" ]]; then
     cp "$PRIVATE_DIR"/claude/agents/*.md "$TARGET_HOME/.claude/agents/" 2>/dev/null || true
@@ -133,6 +149,10 @@ if [[ "$WITH_PRIVATE" -eq 1 ]]; then
       cp -R "$skill_dir" "$TARGET_HOME/.codex/skills/"
     done
     echo "Installed private Codex overlay from $PRIVATE_DIR/codex/skills"
+  fi
+  if [[ "$INSTALL_GEMINI" -eq 1 && -d "$PRIVATE_DIR/gemini/agents" ]]; then
+    cp "$PRIVATE_DIR"/gemini/agents/*.md "$TARGET_HOME/.gemini/agents/" 2>/dev/null || true
+    echo "Installed private Gemini overlay from $PRIVATE_DIR/gemini/agents"
   fi
 else
   echo "Installed tracked core pack only."

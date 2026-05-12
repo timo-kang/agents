@@ -43,6 +43,7 @@ check_skill() {
   fi
   check_file "$skill_dir/SKILL.md"
   check_file "$skill_dir/agents/openai.yaml"
+  check_file "$skill_dir/agents/gemini.yaml"
   if grep -RIn '\[TODO:' "$skill_dir" >/dev/null 2>&1; then
     echo "Found TODO placeholder in $skill_dir" >&2
     FAILURES=1
@@ -90,6 +91,13 @@ done < <(
 
 while IFS= read -r entry; do
   [[ -z "$entry" ]] && continue
+  check_file "$REPO_ROOT/gemini/agents/$entry"
+done < <(
+  manifest_entries "$MANIFEST_DIR/gemini-core.txt"
+)
+
+while IFS= read -r entry; do
+  [[ -z "$entry" ]] && continue
   check_skill "$REPO_ROOT/codex/skills/$entry"
 done < <(
   manifest_entries "$MANIFEST_DIR/codex-core.txt"
@@ -101,6 +109,13 @@ if [[ "$WITH_PRIVATE" -eq 1 ]]; then
       [[ -z "$private_file" ]] && continue
       check_optional_private_file "$private_file"
     done < <(find "$PRIVATE_DIR/claude/agents" -maxdepth 1 -type f -name '*.md' | sort)
+  fi
+
+  if [[ -d "$PRIVATE_DIR/gemini/agents" ]]; then
+    while IFS= read -r private_file; do
+      [[ -z "$private_file" ]] && continue
+      check_optional_private_file "$private_file"
+    done < <(find "$PRIVATE_DIR/gemini/agents" -maxdepth 1 -type f -name '*.md' | sort)
   fi
 
   if [[ -d "$PRIVATE_DIR/codex/skills" ]]; then

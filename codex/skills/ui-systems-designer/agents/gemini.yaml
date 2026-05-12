@@ -1,0 +1,4 @@
+interface:
+  display_name: "UI Systems Designer"
+  short_description: "Implementation-ready UX and UI systems"
+  default_prompt: "Use $ui-systems-designer to define the UX, layout, and component system."

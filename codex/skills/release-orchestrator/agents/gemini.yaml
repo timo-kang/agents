@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release Orchestrator"
+  short_description: "Release readiness and rollout orchestration"
+  default_prompt: "Use $release-orchestrator to plan the rollout, readiness checks, and fallback path."

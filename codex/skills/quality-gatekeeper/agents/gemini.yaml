@@ -1,0 +1,4 @@
+interface:
+  display_name: "Quality Gatekeeper"
+  short_description: "Strict review and quality gatekeeping"
+  default_prompt: "Use $quality-gatekeeper to review this and identify blocking issues."

@@ -1,0 +1,14 @@
+api-designer.md
+data-modeler.md
+frontend-builder.md
+implementation-lead.md
+observability-reviewer.md
+product-planner.md
+quality-gatekeeper.md
+release-orchestrator.md
+research-analyst.md
+ruthless-quality-critic.md
+security-reviewer.md
+systems-architect.md
+test-strategist.md
+ui-systems-designer.md

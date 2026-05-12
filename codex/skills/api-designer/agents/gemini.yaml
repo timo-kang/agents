@@ -1,0 +1,4 @@
+interface:
+  display_name: "API Designer"
+  short_description: "API contract and handler design"
+  default_prompt: "Use $api-designer to define the handler contract, request flow, and failure behavior."

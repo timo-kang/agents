@@ -1,0 +1,4 @@
+interface:
+  display_name: "Research Analyst"
+  short_description: "Evidence-driven research and analysis"
+  default_prompt: "Use $research-analyst to investigate this thoroughly before we decide."

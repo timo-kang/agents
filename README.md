@@ -3,6 +3,7 @@
 Portable agent repository for:
 
 - Claude agents in `claude/agents/`
+- Gemini agents in `gemini/agents/`
 - Codex skills in `codex/skills/`
 - managed install profiles in `manifests/`
 - local ignored overlays in `private/`
@@ -47,14 +48,19 @@ agents/
 ├── claude/
 │   └── agents/
 │       └── *.md
+├── gemini/
+│   └── agents/
+│       └── *.md
 ├── codex/
 │   └── skills/
 │       └── <skill-name>/
 │           ├── SKILL.md
 │           ├── agents/openai.yaml
+│           ├── agents/gemini.yaml
 │           └── references/...
 ├── private/              # local only, git-ignored
 │   ├── claude/agents/
+│   ├── gemini/agents/
 │   └── codex/skills/
 └── scripts/
     ├── install.sh
@@ -73,6 +79,7 @@ Clone the repo, then run:
 By default this installs:
 
 - the repo-managed core Claude agents to `~/.claude/agents`
+- the repo-managed core Gemini agents to `~/.gemini/agents`
 - the repo-managed core Codex skills to `~/.codex/skills`
 
 The installer is convergent for repo-managed items:
@@ -84,6 +91,7 @@ The installer is convergent for repo-managed items:
 
 ```bash
 ./scripts/install.sh --claude-only
+./scripts/install.sh --gemini-only
 ./scripts/install.sh --codex-only
 ```
 
@@ -101,7 +109,7 @@ The installer is convergent for repo-managed items:
 
 ## Sync This Repo From Your Current Machine
 
-If you edit the live agents under `~/.claude/agents` or `~/.codex/skills`, pull those changes back into this repo with:
+If you edit the live agents under `~/.claude/agents`, `~/.gemini/agents`, or `~/.codex/skills`, pull those changes back into this repo with:
 
 ```bash
 ./scripts/sync-from-home.sh
@@ -132,7 +140,7 @@ Before committing or after syncing, run:
 This checks that:
 
 - every manifest entry exists
-- every Codex skill has `SKILL.md` and `agents/openai.yaml`
+- every Codex skill has `SKILL.md`, `agents/openai.yaml`, and `agents/gemini.yaml`
 - no repo-managed skill still contains `[TODO:]` placeholders
 - repo-local skill validation passes
 
@@ -154,7 +162,7 @@ It validates the tracked public pack only, not your ignored local private overla
 
 ## Notes
 
-- Put project-specific or proprietary roles under `private/claude/agents/` and `private/codex/skills/`. That path is ignored by git and is intentionally outside the public core pack.
+- Put project-specific or proprietary roles under `private/claude/agents/`, `private/gemini/agents/`, and `private/codex/skills/`. That path is ignored by git and is intentionally outside the public core pack.
 - See [PRIVATE_OVERLAY.md](PRIVATE_OVERLAY.md) for the local private-overlay convention.
 - The tracked core roles are intended to stay reusable across projects.
-- After installing on another machine, restart or reload Claude/Codex so the new agents and skills are discovered.
+- After installing on another machine, restart or reload Claude/Gemini/Codex so the new agents and skills are discovered.
